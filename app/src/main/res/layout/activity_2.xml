@@ -2,11 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-
-
-    android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".Activity2">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/top_toolbar"
@@ -46,6 +44,7 @@
         android:layout_width="@dimen/bottom_ic"
         android:layout_height="@dimen/bottom_ic"
         android:layout_marginStart="50dp"
+        android:alpha="0.5"
         android:background="@drawable/home_ic"
         app:layout_constraintBottom_toBottomOf="@+id/bottom_toolbar"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,7 +54,6 @@
         android:id="@+id/bottom_toolbar_btn2"
         android:layout_width="@dimen/bottom_ic"
         android:layout_height="@dimen/bottom_ic"
-        android:alpha="0.5"
         android:background="@drawable/train_ic"
         app:layout_constraintBottom_toBottomOf="@+id/bottom_toolbar"
         app:layout_constraintEnd_toStartOf="@+id/bottom_toolbar_btn3"
