@@ -19,11 +19,7 @@ public class Activity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_2);
-        WindowInsetsController controller = getWindow().getInsetsController();
-        if (controller != null) {
-            controller.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
-            controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-        }
+
         bottomnavbar = new ArrayList<ImageButton>();
         bottomnavbar.add((ImageButton) findViewById(R.id.bottom_toolbar_btn1));
         bottomnavbar.add( (ImageButton) findViewById(R.id.bottom_toolbar_btn2));
