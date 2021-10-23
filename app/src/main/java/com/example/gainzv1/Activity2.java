@@ -2,14 +2,28 @@ package com.example.gainzv1;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.widget.ImageButton;
+import android.widget.Toast;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Activity2 extends AppCompatActivity {
 
@@ -24,8 +38,6 @@ public class Activity2 extends AppCompatActivity {
         bottomnavbar.add((ImageButton) findViewById(R.id.bottom_toolbar_btn1));
         bottomnavbar.add( (ImageButton) findViewById(R.id.bottom_toolbar_btn2));
         bottomnavbar.add( (ImageButton) findViewById(R.id.bottom_toolbar_btn3));
-
-
 
         bottomnavbar.forEach((btn)-> btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,5 +61,59 @@ public class Activity2 extends AppCompatActivity {
 
             }
         }));
+
+        findViewById(R.id.createXML).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createXML();
+            }
+        });
+    }
+
+    private void createXML()
+    {
+        final ProgressDialog loading = ProgressDialog.show(this,"Adding Item","Please wait");
+        final String name = "newXML".trim();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbwOSTkV0WHn8laIU_S50F100AMV0_Sa3O3PsMivCmMaECgk5yRZULqYPt_6PZRk6Z5M/exec",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        loading.dismiss();
+                        Toast.makeText(Activity2.this,response,Toast.LENGTH_LONG).show();
+                        Log.d("wtf",response);
+                        Intent intent = new Intent(getApplicationContext(),Activity2.class);
+                        startActivity(intent);
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> parmas = new HashMap<>();
+
+                //here we pass params
+                parmas.put("action","createXML");
+                parmas.put("fileName",name);
+
+                return parmas;
+            }
+        };
+        int socketTimeOut = 50000;// u can change this .. here it is 50 seconds
+
+        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        stringRequest.setRetryPolicy(retryPolicy);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        queue.add(stringRequest);
+
+
     }
 }

@@ -72,4 +72,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/bottom_toolbar" />
 
+    <Button
+        android:id="@+id/createXML"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="314dp"
+        android:layout_marginBottom="257dp"
+        android:text="create xml"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_toolbar" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
