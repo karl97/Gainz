@@ -29,59 +29,53 @@ public class Activity2 extends AppCompatActivity {
 
     Intent intent;
     ArrayList<ImageButton> bottomnavbar;
+    String url = "https://script.google.com/macros/s/AKfycbwpSkjhhPsgziYD2GdZ5eHDp3ZJ7E2z9M1szZixJWq4bPUfMVH5TuMi357Z_q7GgLsf/exec";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_2);
 
-        bottomnavbar = new ArrayList<ImageButton>();
-        bottomnavbar.add((ImageButton) findViewById(R.id.bottom_toolbar_btn1));
-        bottomnavbar.add( (ImageButton) findViewById(R.id.bottom_toolbar_btn2));
-        bottomnavbar.add( (ImageButton) findViewById(R.id.bottom_toolbar_btn3));
-
-        bottomnavbar.forEach((btn)-> btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switch (view.getId())
-                {
-
-                    case R.id.bottom_toolbar_btn1:
-                        intent = new Intent(Activity2.this, MainActivity.class);
-                        startActivity(intent);
-                        break;
-                    case R.id.bottom_toolbar_btn2:
-
-                        break;
-                    case R.id.bottom_toolbar_btn3:
-                        intent = new Intent(Activity2.this, Activity3.class);
-                        startActivity(intent);
-                        break;
-                    default:
-                }
-
-            }
-        }));
-
         findViewById(R.id.createXML).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createXML();
+                addFieldsXML("test");
             }
         });
     }
 
-    private void createXML()
+    public void addFieldsXML(String filename)
     {
-        final ProgressDialog loading = ProgressDialog.show(this,"Adding Item","Please wait");
-        final String name = "newXML".trim();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://script.google.com/macros/s/AKfycbwOSTkV0WHn8laIU_S50F100AMV0_Sa3O3PsMivCmMaECgk5yRZULqYPt_6PZRk6Z5M/exec",
+        Map<String, String> a = new HashMap<>();
+        a.put("action","addFieldsXML");
+        a.put("fileName",filename);
+        a.put("length","5");
+        a.put("1","ex1");
+        a.put("2","3");
+        a.put("3","8");
+        a.put("4","12");
+        a.put("5","...");
+        SendRequest(a);
+    }
+
+    public void createXML(String filename)
+    {
+        Map<String, String> a = new HashMap<>();
+        a.put("action","createXML");
+        a.put("fileName",filename);
+        SendRequest(a);
+    }
+
+    private void SendRequest(Map<String, String> params)
+    {
+        final ProgressDialog loading = ProgressDialog.show(this,"Sending Request","Please wait");
+        final String name = "newXML";
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
 
                         loading.dismiss();
                         Toast.makeText(Activity2.this,response,Toast.LENGTH_LONG).show();
-                        Log.d("wtf",response);
                         Intent intent = new Intent(getApplicationContext(),Activity2.class);
                         startActivity(intent);
 
@@ -96,13 +90,7 @@ public class Activity2 extends AppCompatActivity {
         ) {
             @Override
             protected Map<String, String> getParams() {
-                Map<String, String> parmas = new HashMap<>();
-
-                //here we pass params
-                parmas.put("action","createXML");
-                parmas.put("fileName",name);
-
-                return parmas;
+                return params;
             }
         };
         int socketTimeOut = 50000;// u can change this .. here it is 50 seconds
@@ -116,4 +104,25 @@ public class Activity2 extends AppCompatActivity {
 
 
     }
+
+    public void bottomNavbarClick(View view) {
+        switch (view.getId())
+        {
+
+            case R.id.bottom_toolbar_btn1:
+                intent = new Intent(Activity2.this, MainActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.bottom_toolbar_btn2:
+
+                break;
+            case R.id.bottom_toolbar_btn3:
+                intent = new Intent(Activity2.this, Activity3.class);
+                startActivity(intent);
+                break;
+            default:
+        }
+
+    }
+
 }
