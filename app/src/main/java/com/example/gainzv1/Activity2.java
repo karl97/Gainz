@@ -5,10 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowInsets;
-import android.view.WindowInsetsController;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -29,7 +26,7 @@ public class Activity2 extends AppCompatActivity {
 
     Intent intent;
     ArrayList<ImageButton> bottomnavbar;
-    String url = "https://script.google.com/macros/s/AKfycbwpSkjhhPsgziYD2GdZ5eHDp3ZJ7E2z9M1szZixJWq4bPUfMVH5TuMi357Z_q7GgLsf/exec";
+    String url = "https://script.google.com/macros/s/AKfycbzX21wPLafJwfkD04pMrGvDvw8ts3Er-KGm5CN3Rx372MkjWvVvdbbzvxjxtU-Cr84Z/exec" ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,30 +35,34 @@ public class Activity2 extends AppCompatActivity {
         findViewById(R.id.createXML).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addFieldsXML("test");
+                createWorkoutXML("PULL");
+            }
+        });
+        findViewById(R.id.fillXML).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addExerciseXML("PULL","triceps",3,12,15);
             }
         });
     }
 
-    public void addFieldsXML(String filename)
+    public void addExerciseXML(String Workout,String exerciseName,int sets,int repMin, int repMax)
     {
         Map<String, String> a = new HashMap<>();
-        a.put("action","addFieldsXML");
-        a.put("fileName",filename);
-        a.put("length","5");
-        a.put("1","ex1");
-        a.put("2","3");
-        a.put("3","8");
-        a.put("4","12");
-        a.put("5","...");
+        a.put("action","addExerciseXML");
+        a.put("workout",Workout);
+        a.put("exerciseName",exerciseName);
+        a.put("sets",Integer.toString(sets));
+        a.put("repMin",Integer.toString(repMin));
+        a.put("repMax",Integer.toString(repMax));
         SendRequest(a);
     }
 
-    public void createXML(String filename)
+    public void createWorkoutXML(String WorkoutName)
     {
         Map<String, String> a = new HashMap<>();
-        a.put("action","createXML");
-        a.put("fileName",filename);
+        a.put("action","createWorkoutXML");
+        a.put("workoutName",WorkoutName);
         SendRequest(a);
     }
 

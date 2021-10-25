@@ -76,15 +76,29 @@
         app:layout_constraintTop_toTopOf="@+id/bottom_toolbar" />
 
     <Button
+        android:id="@+id/fillXML"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="314dp"
+        android:layout_marginBottom="257dp"
+        android:text="fill"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_toolbar" />
+
+    <Button
         android:id="@+id/createXML"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="314dp"
         android:layout_marginBottom="257dp"
-        android:text="..."
+        android:text="create"
         app:layout_constraintBottom_toTopOf="@+id/bottom_toolbar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.049"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_toolbar" />
+        app:layout_constraintTop_toBottomOf="@+id/top_toolbar"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
