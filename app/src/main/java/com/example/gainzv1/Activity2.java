@@ -26,35 +26,82 @@ public class Activity2 extends AppCompatActivity {
 
     Intent intent;
     ArrayList<ImageButton> bottomnavbar;
-    String url = "https://script.google.com/macros/s/AKfycbzX21wPLafJwfkD04pMrGvDvw8ts3Er-KGm5CN3Rx372MkjWvVvdbbzvxjxtU-Cr84Z/exec" ;
+    String url = "https://script.google.com/macros/s/AKfycbzGmcYId368Sz9HR3bD-OT2AOfvCAgTSwYNeuLV7_ldR_8IfVuLrHp4mKI95DzwtbTp/exec" ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_2);
 
-        findViewById(R.id.createXML).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.createWorkout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 createWorkoutXML("PULL");
             }
         });
-        findViewById(R.id.fillXML).setOnClickListener(new View.OnClickListener() {
+
+        findViewById(R.id.createExercise).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addExerciseXML("PULL","triceps",3,12,15);
+                addExerciseXML("PULL","triceps",3,"12-15");
             }
         });
+
+        findViewById(R.id.createRow).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int[] e = new int[3];
+                e[0]=12;
+                e[1]=11;
+                e[2]=10;
+                createNewRow("PULL","triceps",200,e,"COOOL");
+            }
+        });
+
+
+        findViewById(R.id.deleteRow).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                deleteLastRow("PULL","triceps");
+            }
+        });
+
     }
 
-    public void addExerciseXML(String Workout,String exerciseName,int sets,int repMin, int repMax)
+
+    public void deleteLastRow(String Workout, String exercise)
+    {
+        Map<String, String> a = new HashMap<>();
+        a.put("action","deleteLastRow");
+        a.put("workout",Workout);
+        a.put("exercise",exercise);
+        SendRequest(a);
+    }
+
+    public void createNewRow(String Workout, String exercise, int weight, int[] reps, String note)
+    {
+        Map<String, String> a = new HashMap<>();
+        a.put("action","createNewRow");
+        a.put("workout",Workout);
+        a.put("exercise",exercise);
+        a.put("weight",Integer.toString(weight));
+        a.put("sets",Integer.toString(reps.length));
+        for(int i = 1; i<=reps.length; i=i+1)
+        {
+            a.put(Integer.toString(i), Integer.toString(reps[i - 1]));
+        }
+        a.put("note",note);
+        SendRequest(a);
+    }
+
+    public void addExerciseXML(String Workout,String exerciseName,int sets,String reps)
     {
         Map<String, String> a = new HashMap<>();
         a.put("action","addExerciseXML");
         a.put("workout",Workout);
         a.put("exerciseName",exerciseName);
         a.put("sets",Integer.toString(sets));
-        a.put("repMin",Integer.toString(repMin));
-        a.put("repMax",Integer.toString(repMax));
+        a.put("reps",reps);
         SendRequest(a);
     }
 

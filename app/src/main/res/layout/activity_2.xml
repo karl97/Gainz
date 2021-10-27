@@ -76,29 +76,48 @@
         app:layout_constraintTop_toTopOf="@+id/bottom_toolbar" />
 
     <Button
-        android:id="@+id/fillXML"
+        android:id="@+id/createExercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="314dp"
-        android:layout_marginBottom="257dp"
-        android:text="fill"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_toolbar"
+        android:layout_marginTop="56dp"
+        android:text="Create Exercise"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/createWorkout" />
+
+    <Button
+        android:id="@+id/createWorkout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="96dp"
+        android:text="Create Workout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.475"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_toolbar" />
 
     <Button
-        android:id="@+id/createXML"
+        android:id="@+id/deleteRow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="314dp"
-        android:layout_marginBottom="257dp"
-        android:text="create"
+        android:layout_marginBottom="36dp"
+        android:text="delete Last Row"
         app:layout_constraintBottom_toTopOf="@+id/bottom_toolbar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.049"
+        app:layout_constraintHorizontal_bias="0.478"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_toolbar"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@+id/createRow" />
+
+    <Button
+        android:id="@+id/createRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="76dp"
+        android:text="create new Row"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/createExercise" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
