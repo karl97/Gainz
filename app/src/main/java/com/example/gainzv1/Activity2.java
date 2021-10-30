@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -18,20 +20,54 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+class Workout
+{
+    String name;
+    HashMap<String, Exercise> exercises;
+     Workout(String n, HashMap<String, Exercise> map)
+    {
+        this.name = n;
+        exercises = map;
+    }
+}
+
+class Exercise
+{
+    String name;
+    int sets;
+    String repRange;
+    Exercise(String n, int s, String r)
+    {
+        this.name = n;
+        this.sets = s;
+        this.repRange = r;
+    }
+}
+
 public class Activity2 extends AppCompatActivity {
 
+     HashMap<String, Workout> workouts;
+    ProgressDialog loading;
     Intent intent;
-    ArrayList<ImageButton> bottomnavbar;
-    String url = "https://script.google.com/macros/s/AKfycbzGmcYId368Sz9HR3bD-OT2AOfvCAgTSwYNeuLV7_ldR_8IfVuLrHp4mKI95DzwtbTp/exec" ;
+    String url = "https://script.google.com/macros/s/AKfycbyD_g70vSKN7u8lTmzm6TjClyv5oiHSSZreX96Q3tKFuMoaJEI4PyygUb1Upvl1uXjR/exec" ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_2);
+        getItems();
 
+        Log.d("stop:","");
+
+
+/*
         findViewById(R.id.createWorkout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,10 +100,15 @@ public class Activity2 extends AppCompatActivity {
 
                 deleteLastRow("PULL","triceps");
             }
-        });
+        });*/
 
     }
 
+
+    public void getExercise(String workout,String exercise)
+    {
+
+    }
 
     public void deleteLastRow(String Workout, String exercise)
     {
@@ -115,7 +156,7 @@ public class Activity2 extends AppCompatActivity {
 
     private void SendRequest(Map<String, String> params)
     {
-        final ProgressDialog loading = ProgressDialog.show(this,"Sending Request","Please wait");
+        loading = ProgressDialog.show(this,"Sending Request","Please wait");
         final String name = "newXML";
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
@@ -149,8 +190,85 @@ public class Activity2 extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(this);
 
         queue.add(stringRequest);
+    }
+
+    private void getItems() {
+
+        loading =  ProgressDialog.show(this,"Loading Data","please wait...",false,true);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url+"?action=getItems",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        parseItems(response);
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+
+        int socketTimeOut = 50000;
+        RetryPolicy policy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+
+        stringRequest.setRetryPolicy(policy);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(stringRequest);
+    }
+
+    private void parseItems(String response) {
+        ArrayList<HashMap<String, String>> list = new ArrayList<>();
+
+        try {
+            JSONObject jobj = new JSONObject(response);
+            JSONArray jarray = jobj.getJSONArray("items");
 
 
+             workouts = new HashMap<String,Workout>();
+            for (int i = 0; i < jarray.length(); i++) {
+                JSONObject jo = jarray.getJSONObject(i);
+                String workoutName = jo.getString("w");
+                int num_ex = Integer.parseInt(jo.getString("num_ex"));
+                HashMap<String,Exercise> exercises = new HashMap<String,Exercise>();
+                int j;
+                for (j = 1; j <=num_ex ; j++) // comes at format ex(workoutNum)_(exNum)
+                {
+                    String exName = jo.getString("ex"+Integer.toString(j));
+                    int exSets = Integer.parseInt(jo.getString("sets"+Integer.toString(j)));
+                    String exRepRange = jo.getString("repRange"+Integer.toString(j));
+                    Exercise e = new Exercise(exName, exSets, exRepRange);
+                    exercises.put(exName,e);
+                }
+
+                workouts.put(workoutName,new Workout(workoutName,exercises));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        //adapter = new SimpleAdapter(this,list,R.layout.list_item_row,
+        //      new String[]{"itemName","brand","price"},new int[]{R.id.tv_item_name,R.id.tv_brand,R.id.tv_price});
+        workouts.forEach((k,v)->
+        {
+            Log.d("WORKOUT---------------",v.name);
+            v.exercises.forEach((kk,vv)->{
+                Log.d("Exercise",vv.name);
+                Log.d("sets",Integer.toString(vv.sets));
+                Log.d("RepRange",vv.repRange);
+            });
+        }
+        );
+
+
+
+        //listView.setAdapter(adapter);
+        loading.dismiss();
     }
 
     public void bottomNavbarClick(View view) {
