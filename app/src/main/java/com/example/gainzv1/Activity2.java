@@ -4,11 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -24,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +48,7 @@ class Workout
     }
 }
 
-class Exercise
+class Exercise implements Serializable
 {
     String name;
     int sets;
@@ -63,8 +72,6 @@ public class Activity2 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_2);
         getItems();
-
-        Log.d("stop:","");
 
 
 /*
@@ -194,7 +201,7 @@ public class Activity2 extends AppCompatActivity {
 
     private void getItems() {
 
-        loading =  ProgressDialog.show(this,"Loading Data","please wait...",false,true);
+        loading =  ProgressDialog.show(this,"Loading Data","please wait...",false,false);
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url+"?action=getItems",
                 new Response.Listener<String>() {
@@ -229,23 +236,23 @@ public class Activity2 extends AppCompatActivity {
             JSONArray jarray = jobj.getJSONArray("items");
 
 
-             workouts = new HashMap<String,Workout>();
+            workouts = new HashMap<String, Workout>();
             for (int i = 0; i < jarray.length(); i++) {
                 JSONObject jo = jarray.getJSONObject(i);
                 String workoutName = jo.getString("w");
                 int num_ex = Integer.parseInt(jo.getString("num_ex"));
-                HashMap<String,Exercise> exercises = new HashMap<String,Exercise>();
+                HashMap<String, Exercise> exercises = new HashMap<String, Exercise>();
                 int j;
-                for (j = 1; j <=num_ex ; j++) // comes at format ex(workoutNum)_(exNum)
+                for (j = 1; j <= num_ex; j++) // comes at format ex(workoutNum)_(exNum)
                 {
-                    String exName = jo.getString("ex"+Integer.toString(j));
-                    int exSets = Integer.parseInt(jo.getString("sets"+Integer.toString(j)));
-                    String exRepRange = jo.getString("repRange"+Integer.toString(j));
+                    String exName = jo.getString("ex" + Integer.toString(j));
+                    int exSets = Integer.parseInt(jo.getString("sets" + Integer.toString(j)));
+                    String exRepRange = jo.getString("repRange" + Integer.toString(j));
                     Exercise e = new Exercise(exName, exSets, exRepRange);
-                    exercises.put(exName,e);
+                    exercises.put(exName, e);
                 }
 
-                workouts.put(workoutName,new Workout(workoutName,exercises));
+                workouts.put(workoutName, new Workout(workoutName, exercises));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -254,16 +261,33 @@ public class Activity2 extends AppCompatActivity {
 
         //adapter = new SimpleAdapter(this,list,R.layout.list_item_row,
         //      new String[]{"itemName","brand","price"},new int[]{R.id.tv_item_name,R.id.tv_brand,R.id.tv_price});
-        workouts.forEach((k,v)->
-        {
-            Log.d("WORKOUT---------------",v.name);
-            v.exercises.forEach((kk,vv)->{
-                Log.d("Exercise",vv.name);
-                Log.d("sets",Integer.toString(vv.sets));
-                Log.d("RepRange",vv.repRange);
-            });
-        }
+        LinearLayout root = findViewById(R.id.linearLayoutWorkouts);
+        workouts.forEach((k, v) ->
+                {
+                    Log.d("WORKOUT---------------", v.name);
+                    Button b = new Button(this);
+                    b.setText(v.name);
+                    b.setHeight(150);
+                    int color = getResources().getColor(R.color.orange);
+                    b.getBackground().mutate().setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC));
+                    b.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent i = new Intent(Activity2.this, Train.class);
+                            i.putExtra("workout",v.name);
+                            i.putExtra("exercises",v.exercises);
+                            startActivity(i);
+                        }
+                    });
+                    root.addView(b);
+                    v.exercises.forEach((kk, vv) -> {
+                        Log.d("Exercise", vv.name);
+                        Log.d("sets", Integer.toString(vv.sets));
+                        Log.d("RepRange", vv.repRange);
+                    });
+                }
         );
+
 
 
 

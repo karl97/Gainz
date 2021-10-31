@@ -25,7 +25,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
-        android:fontFamily="@string/app_name"
         app:layout_constraintBottom_toBottomOf="@+id/top_toolbar"
         app:layout_constraintEnd_toEndOf="@+id/top_toolbar"
         app:layout_constraintStart_toStartOf="@+id/top_toolbar"
