@@ -10,6 +10,7 @@ import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
@@ -22,16 +23,28 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 
+class WorkoutIds
+{
+    View weight;
+    View[] reps;
+    View note;
+    public WorkoutIds(View w, View[] r,View n)
+    {
+        this.weight=w;
+        this.reps=r;
+        this.note=n;
+    }
+}
 class WorkoutData
 {
     int weight;
     int[] reps;
-    String Note;
+    String note;
     public WorkoutData(int w, int[] r,String n)
     {
         this.weight=w;
         this.reps=r;
-        this.Note=n;
+        this.note=n;
     }
 }
 
@@ -45,15 +58,12 @@ public class Train extends AppCompatActivity {
         repValues[i] = Integer.toString(i);
         }
     }
+    HashMap<String,WorkoutData> data;
+    HashMap<String,WorkoutIds> Ids;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_train);
-        WindowInsetsController controller = getWindow().getInsetsController();
-        if (controller != null) {
-            controller.hide( WindowInsets.Type.navigationBars());
-            controller.setSystemBarsBehavior(WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-        }
 
 
         Intent intent = getIntent();
@@ -61,12 +71,15 @@ public class Train extends AppCompatActivity {
         TextView t = findViewById(R.id.top_toolbar_text);
         t.setText(workout);
         HashMap<String, Exercise> exercises = (HashMap<String, Exercise>)intent.getSerializableExtra("exercises");
+        Ids = new HashMap<String,WorkoutIds>();
 
         LinearLayout root = findViewById(R.id.linearLayoutExercises);
+        int counter = 1;
         exercises.forEach((k, v) -> {
             LinearLayout row1 = new LinearLayout(this);
             row1.setOrientation(LinearLayout.HORIZONTAL);
             row1.setBackgroundColor(getResources().getColor(R.color.orange));
+
 
             TextView ex = new TextView(this);
             ex.setText(" "+v.name);
@@ -86,12 +99,13 @@ public class Train extends AppCompatActivity {
             weight.setInputType(InputType.TYPE_CLASS_NUMBER);
             weight.setHint("Weight");
             weight.setEms(3);
+
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
             lp.setMargins(30,0,30,0);
             weight.setLayoutParams(lp);
             row2.addView(weight);
 
-
+            View[] pickers = new View[v.sets];
             for(int i =0;i<v.sets;i++)
             {
                 NumberPicker picker = new NumberPicker(this);
@@ -104,6 +118,8 @@ public class Train extends AppCompatActivity {
                 l.setMargins(-10,-10,-10,-10);
                 picker.setLayoutParams(l);
                 row2.addView(picker);
+
+                pickers[i]=picker;
             }
             LinearLayout row3 = new LinearLayout(this);
             row3.setOrientation(LinearLayout.HORIZONTAL);
@@ -114,6 +130,32 @@ public class Train extends AppCompatActivity {
             row3.addView(note);
             root.addView(row2);
             root.addView(row3);
+
+            WorkoutIds IDS = new WorkoutIds(weight,pickers,note);
+            Ids.put(v.name,IDS);
+        });
+
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+    }
+
+    public void onSaveClicked(View view)
+    {
+        Ids.forEach((k,v) -> {
+            Log.d("Ex",k);
+            String w = ((EditText)v.weight).getText().toString();
+            Log.d("weight",w);
+            for(int i =0;i<v.reps.length;i++)
+            {
+                int num = ((NumberPicker)v.reps[i]).getValue();
+                Log.d("Set"+Integer.toString(i),Integer.toString(num));
+            }
+            String n = ((EditText)v.note).getText().toString();
+            Log.d("Note",n);
         });
     }
 }

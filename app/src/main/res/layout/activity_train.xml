@@ -73,6 +73,7 @@
         android:clickable="true"
         android:scaleX="0.75"
         android:scaleY="0.75"
+        android:onClick="onSaveClicked"
         app:layout_constraintBottom_toBottomOf="@+id/bottom_toolbar2"
         app:layout_constraintStart_toEndOf="@+id/floatingActionButtonTrash"
         app:srcCompat="@drawable/save_ic" />
