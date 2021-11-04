@@ -163,13 +163,13 @@ public class Activity2 extends AppCompatActivity {
 
     private void SendRequest(Map<String, String> params)
     {
-        loading = ProgressDialog.show(this,"Sending Request","Please wait");
+        loading = new ProgressDialog(this);
+        loading.show(this,"Sending Request","Please wait");
         final String name = "newXML";
         StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
                         loading.dismiss();
                         Toast.makeText(Activity2.this,response,Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(getApplicationContext(),Activity2.class);
@@ -276,6 +276,7 @@ public class Activity2 extends AppCompatActivity {
                             Intent i = new Intent(Activity2.this, Train.class);
                             i.putExtra("workout",v.name);
                             i.putExtra("exercises",v.exercises);
+                            i.putExtra("url",url);
                             startActivity(i);
                         }
                     });

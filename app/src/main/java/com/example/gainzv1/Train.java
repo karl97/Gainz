@@ -3,6 +3,7 @@ package com.example.gainzv1;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
@@ -20,8 +21,19 @@ import android.widget.NumberPicker;
 import android.widget.Space;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import java.util.HashMap;
+import java.util.Map;
 
 class WorkoutIds
 {
@@ -58,8 +70,14 @@ public class Train extends AppCompatActivity {
         repValues[i] = Integer.toString(i);
         }
     }
+
+    String url;
     HashMap<String,WorkoutData> data;
     HashMap<String,WorkoutIds> Ids;
+    String workout;
+    ProgressDialog loading;
+    boolean firstReq=true;
+    int numEx;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,12 +85,13 @@ public class Train extends AppCompatActivity {
 
 
         Intent intent = getIntent();
-        String workout = intent.getStringExtra("workout");
+        workout = intent.getStringExtra("workout");
+        url = intent.getStringExtra("url");
         TextView t = findViewById(R.id.top_toolbar_text);
         t.setText(workout);
         HashMap<String, Exercise> exercises = (HashMap<String, Exercise>)intent.getSerializableExtra("exercises");
         Ids = new HashMap<String,WorkoutIds>();
-
+        numEx=exercises.size();
         LinearLayout root = findViewById(R.id.linearLayoutExercises);
         int counter = 1;
         exercises.forEach((k, v) -> {
@@ -145,17 +164,84 @@ public class Train extends AppCompatActivity {
 
     public void onSaveClicked(View view)
     {
+
         Ids.forEach((k,v) -> {
             Log.d("Ex",k);
             String w = ((EditText)v.weight).getText().toString();
+            if(w.matches(""))
+                w="-";
             Log.d("weight",w);
+            String[] num=new String[v.reps.length];
             for(int i =0;i<v.reps.length;i++)
             {
-                int num = ((NumberPicker)v.reps[i]).getValue();
-                Log.d("Set"+Integer.toString(i),Integer.toString(num));
+                num[i] = Integer.toString(((NumberPicker)v.reps[i]).getValue());
+                Log.d("Set"+Integer.toString(i),num[i]);
             }
             String n = ((EditText)v.note).getText().toString();
+            if(n.matches(""))
+                n="...";
             Log.d("Note",n);
+
+            createNewRow(workout,k,w,num,n);
         });
+    }
+    public void createNewRow(String Workout, String exercise, String weight, String[] reps, String note)
+    {
+        Map<String, String> a = new HashMap<>();
+        a.put("action","createNewRow");
+        a.put("workout",Workout);
+        a.put("exercise",exercise);
+        a.put("weight",weight);
+        a.put("sets",Integer.toString(reps.length));
+        for(int i = 1; i<=reps.length; i=i+1)
+        {
+            a.put(Integer.toString(i), reps[i - 1]);
+        }
+        a.put("note",note);
+
+        SendRequest(a);
+    }
+
+    private void SendRequest(Map<String, String> params)
+    {
+        if(firstReq) {
+            loading = ProgressDialog.show(this, "Sending Training Data", "Please wait");
+            firstReq=false;
+        }
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        numEx = numEx - 1;
+                        if(numEx<1)
+                            loading.dismiss();
+                        Toast.makeText(Train.this,response,Toast.LENGTH_LONG).show();
+                        //Intent intent = new Intent(Train.this,MainActivity.class);
+                        //startActivity(intent);
+                        //finish();
+                        onBackPressed();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                return params;
+            }
+        };
+        int socketTimeOut = 50000;// u can change this .. here it is 50 seconds
+
+        RetryPolicy retryPolicy = new DefaultRetryPolicy(socketTimeOut, 0, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        stringRequest.setRetryPolicy(retryPolicy);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        queue.add(stringRequest);
     }
 }
